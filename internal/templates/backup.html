@@ -1,0 +1,85 @@
+{{define "backup.html"}}
+{{template "base" .}}
+<div class="page-header">
+  <h1>Резервные копии</h1>
+</div>
+
+{{with .Data}}
+{{if .Flash}}<div class="flash">✓ {{.Flash}}</div>{{end}}
+{{if .Error}}<div class="flash flash-error">✗ {{.Error}}</div>{{end}}
+
+<!-- Create backup -->
+<div class="backup-section" style="margin-bottom:20px">
+  <div class="backup-section-header">
+    💾 Создать резервную копию
+  </div>
+  <div class="backup-section-body">
+    <form method="POST" action="/backup/create" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+      <select name="storage" style="min-width:200px;padding:9px 14px;background:#22263a;border:1px solid #2d3148;border-radius:8px;color:#e2e8f0;font-size:.875rem">
+        {{range .Storages}}
+        <option value="{{.Name}}">{{.Name}} ({{.Path}})</option>
+        {{end}}
+      </select>
+      <button type="submit" class="btn btn-success">▶ Создать бэкап</button>
+    </form>
+  </div>
+</div>
+
+<!-- Storages and their backups -->
+{{range .Storages}}
+<div class="backup-section" style="margin-bottom:20px">
+  <div class="backup-section-header">
+    <span>📁 Хранилище: <strong>{{.Name}}</strong> &nbsp;<small style="color:#7c8496">{{.Path}}</small></span>
+    {{if ne .Name "default"}}
+    <form class="inline-form" method="POST" action="/backup/storage/remove"
+          onsubmit="return confirm('Удалить хранилище «{{.Name}}»? Файлы не будут удалены.')">
+      <input type="hidden" name="name" value="{{.Name}}">
+      <button class="btn btn-danger btn-sm">Удалить хранилище</button>
+    </form>
+    {{end}}
+  </div>
+  <div class="backup-section-body">
+    {{$storageName := .Name}}
+    {{$backups := index $.Backups .Name}}
+    {{if $backups}}
+    <ul class="backup-file-list">
+      {{range $backups}}
+      <li>
+        <span>{{.}}</span>
+        <div class="backup-file-actions">
+          <form class="inline-form" method="POST" action="/backup/restore"
+                onsubmit="return confirm('Восстановить из «{{.}}»? Текущие данные будут перезаписаны!')">
+            <input type="hidden" name="storage" value="{{$storageName}}">
+            <input type="hidden" name="filename" value="{{.}}">
+            <button class="btn btn-ghost btn-sm">♻ Восстановить</button>
+          </form>
+          <form class="inline-form" method="POST" action="/backup/delete"
+                onsubmit="return confirm('Удалить бэкап «{{.}}»?')">
+            <input type="hidden" name="storage" value="{{$storageName}}">
+            <input type="hidden" name="filename" value="{{.}}">
+            <button class="btn btn-danger btn-sm">✕ Удалить</button>
+          </form>
+        </div>
+      </li>
+      {{end}}
+    </ul>
+    {{else}}
+    <p class="empty-state">Резервных копий нет</p>
+    {{end}}
+  </div>
+</div>
+{{end}}
+
+<!-- Add storage -->
+<div class="backup-section">
+  <div class="backup-section-header">➕ Добавить хранилище</div>
+  <div class="backup-section-body">
+    <form method="POST" action="/backup/storage/add" class="add-storage-form">
+      <input type="text" name="name" placeholder="Имя (напр. scheduled)" required style="min-width:180px">
+      <input type="text" name="path" placeholder="Путь (напр. /backups/scheduled)" required style="min-width:260px">
+      <button type="submit" class="btn btn-primary">Добавить</button>
+    </form>
+  </div>
+</div>
+{{end}}
+{{end}}

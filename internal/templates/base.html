@@ -1,0 +1,259 @@
+{{define "base"}}<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{.Title}} — ColorShapes Admin</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22263a;
+      --accent: #6c63ff;
+      --accent2: #ff6b6b;
+      --text: #e2e8f0;
+      --muted: #7c8496;
+      --border: #2d3148;
+      --green: #4ade80;
+      --yellow: #fbbf24;
+      --red: #f87171;
+      --radius: 10px;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 220px;
+      min-height: 100vh;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    .sidebar-logo {
+      padding: 24px 20px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: .04em;
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-logo span { color: var(--accent2); }
+
+    .nav { flex: 1; padding: 16px 0; }
+    .nav a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .9rem;
+      transition: color .15s, background .15s;
+    }
+    .nav a:hover, .nav a.active {
+      color: var(--text);
+      background: var(--surface2);
+    }
+    .nav a.active { border-left: 3px solid var(--accent); color: var(--accent); }
+    .nav-icon { font-size: 1.1rem; }
+
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+    }
+    .sidebar-footer a {
+      color: var(--muted);
+      font-size: .85rem;
+      text-decoration: none;
+    }
+    .sidebar-footer a:hover { color: var(--red); }
+
+    /* Main */
+    .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    .topbar {
+      padding: 16px 32px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      font-size: .9rem;
+      color: var(--muted);
+    }
+    .topbar strong { color: var(--text); }
+
+    .content { padding: 32px; flex: 1; }
+
+    /* Flash / Error */
+    .flash {
+      background: rgba(74, 222, 128, .1);
+      border: 1px solid var(--green);
+      color: var(--green);
+      padding: 10px 16px;
+      border-radius: var(--radius);
+      margin-bottom: 20px;
+      font-size: .9rem;
+    }
+    .flash-error {
+      background: rgba(248, 113, 113, .1);
+      border: 1px solid var(--red);
+      color: var(--red);
+    }
+
+    /* Page header */
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .page-header h1 { font-size: 1.4rem; font-weight: 700; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 18px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: .875rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: opacity .15s, transform .1s;
+    }
+    .btn:hover { opacity: .85; transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-danger  { background: var(--red);    color: #fff; }
+    .btn-success { background: var(--green);  color: #000; }
+    .btn-ghost   { background: var(--surface2); color: var(--text); }
+    .btn-sm { padding: 5px 12px; font-size: .8rem; }
+
+    /* Table */
+    .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { background: var(--surface2); }
+    th { padding: 12px 16px; text-align: left; font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+    td { padding: 12px 16px; border-top: 1px solid var(--border); font-size: .875rem; }
+    tr:hover td { background: rgba(108, 99, 255, .04); }
+
+    /* Color swatch */
+    .swatch { display: inline-block; width: 18px; height: 18px; border-radius: 4px; vertical-align: middle; margin-right: 6px; border: 1px solid rgba(255,255,255,.15); }
+
+    /* Form */
+    .form-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      max-width: 520px;
+    }
+    .form-group { margin-bottom: 18px; }
+    label { display: block; font-size: .825rem; color: var(--muted); margin-bottom: 6px; font-weight: 600; }
+    input[type=text], input[type=email], input[type=password], input[type=color], select {
+      width: 100%;
+      padding: 9px 14px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: .875rem;
+      outline: none;
+      transition: border-color .15s;
+    }
+    input:focus, select:focus { border-color: var(--accent); }
+    input[type=color] { height: 42px; padding: 4px 8px; cursor: pointer; }
+    .form-actions { display: flex; gap: 10px; margin-top: 8px; }
+
+    /* Stat cards */
+    .stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+    }
+    .stat-card .label { font-size: .75rem; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 8px; }
+    .stat-card .value { font-size: 2rem; font-weight: 700; color: var(--accent); }
+
+    /* Backup sections */
+    .backup-grid { display: grid; gap: 24px; }
+    .backup-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .backup-section-header {
+      padding: 14px 20px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+      font-size: .9rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .backup-section-body { padding: 20px; }
+    .backup-file-list { list-style: none; }
+    .backup-file-list li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: .85rem;
+      font-family: monospace;
+    }
+    .backup-file-list li:last-child { border-bottom: none; }
+    .backup-file-actions { display: flex; gap: 8px; }
+
+    .inline-form { display: inline; }
+    .add-storage-form { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+    .add-storage-form input { flex: 1; min-width: 140px; }
+    .empty-state { color: var(--muted); font-size: .85rem; font-style: italic; }
+  </style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-logo">Color<span>Shapes</span> Admin</div>
+  <nav class="nav">
+    <a href="/" {{if eq .Title "Панель управления"}}class="active"{{end}}>
+      <span class="nav-icon">🏠</span> Главная
+    </a>
+    <a href="/colors" {{if eq .Title "Цвета"}}class="active"{{end}}>
+      <span class="nav-icon">🎨</span> Цвета
+    </a>
+    <a href="/shapes" {{if eq .Title "Фигуры"}}class="active"{{end}}>
+      <span class="nav-icon">🔷</span> Фигуры
+    </a>
+    <a href="/backup" {{if eq .Title "Резервные копии"}}class="active"{{end}}>
+      <span class="nav-icon">💾</span> Резервные копии
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <a href="/logout">🚪 Выйти</a>
+  </div>
+</aside>
+<main class="main">
+  <div class="topbar">
+    ColorShapes Admin &mdash; <strong>{{.Title}}</strong>
+  </div>
+  <div class="content">
+    {{if .Flash}}<div class="flash">✓ {{.Flash}}</div>{{end}}
+    {{if .Error}}<div class="flash flash-error">✗ {{.Error}}</div>{{end}}
+    {{block "content" .}}{{end}}
+  </div>
+</main>
+</body>
+</html>{{end}}

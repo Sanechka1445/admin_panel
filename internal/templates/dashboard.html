@@ -1,0 +1,19 @@
+{{define "dashboard.html"}}
+{{template "base" .}}
+<div class="stats">
+  <div class="stat-card">
+    <div class="label">🎨 Цветов</div>
+    <div class="value">{{.Data.Colors}}</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">🔷 Фигур</div>
+    <div class="value">{{.Data.Shapes}}</div>
+  </div>
+</div>
+<div style="margin-top:32px; display:flex; gap:16px; flex-wrap:wrap;">
+  <a href="/colors/new" class="btn btn-primary">+ Добавить цвет</a>
+  <a href="/shapes/new" class="btn btn-primary">+ Добавить фигуру</a>
+  <a href="/backup" class="btn btn-ghost">💾 Резервные копии</a>
+</div>
+{{end}}
+
